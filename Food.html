@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Homemade Snacks & Pickles</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    background: linear-gradient(135deg, #fffbe6, #ffe6e6);
+    transition: background 0.5s ease;
+  }
+
+  /* Banner */
+  .banner {
+    width: 100%;
+    height: 220px;
+    background: url('images/new-banner.jpg') center/cover no-repeat;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    text-shadow: 2px 2px 8px rgba(0,0,0,0.7);
+    font-size: 40px;
+    font-weight: bold;
+    letter-spacing: 2px;
+    position: relative;
+    flex-direction: column;
+  }
+
+  /* Logo */
+  .logo {
+    margin-top: 20px;
+  }
+  .logo img {
+    height: 120px;
+    border-radius: 70%;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  }
+
+  /* Main Categories */
+  #mainCategories {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    margin: 20px;
+  }
+  .tab {
+    flex: 1;
+    height: 160px;
+    border-radius: 15px;
+    color: white;
+    font-size: 26px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    text-shadow: 2px 2px 6px rgba(0,0,0,0.6);
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+  .tab:hover { transform: scale(1.03); }
+  .snacks { background: url("images/Snacks.jpg") center/cover; }
+  .pickles { background: url("images/Pickles.jpg") center/cover; }
+  .tab::after {
+    content: "";
+    position: absolute; top:0; left:0; width:100%; height:100%;
+    background: rgba(0,0,0,0.4);
+  }
+  .tab span { position: relative; z-index: 1; }
+
+  /* Breadcrumb */
+  .breadcrumb { margin: 10px 20px; font-size: 14px; color: #555; }
+  /* Back Button */
+  .backBtn {
+    margin: 15px; padding: 8px 16px;
+    background: #007bff; color: white;
+    border: none; border-radius: 6px; cursor: pointer;
+  }
+
+  /* Category Sections */
+  .category { display: none; padding: 20px; }
+  .category.active { display: block; }
+  .menu {
+    display: flex; flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px; padding: 20px;
+  }
+
+  /* Items */
+  .item {
+    border-radius: 15px;
+    padding: 15px;
+    width: 240px;
+    background: #fff;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    transition: transform 0.2s;
+    position: relative;
+    text-align: center;
+  }
+  .item:hover { transform: translateY(-5px); }
+  img {
+    width: 100%; border-radius: 12px;
+    height: 150px; object-fit: cover;
+  }
+  button {
+    margin-top: 10px;
+    padding: 8px 12px;
+    background: green; color: #fff;
+    border: none; border-radius: 5px;
+    cursor: pointer;
+  }
+  button:hover { background: darkgreen; }
+
+  /* Homemade Badge */
+  .badge {
+    position: absolute; top: 10px; left: 10px;
+    background: #ff5722; color: white;
+    font-size: 12px; padding: 3px 8px;
+    border-radius: 12px; font-weight: bold;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  }
+
+  /* Veg/Non-Veg Labels */
+  .veg-label, .nonveg-label {
+    position: absolute; top: 10px; right: 10px;
+    font-size: 12px; padding: 3px 8px;
+    border-radius: 12px; font-weight: bold;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    color: white;
+  }
+  .veg-label { background: green; }
+  .nonveg-label { background: red; }
+
+  /* Floating Cart Button */
+  #cartBtn {
+    position: fixed; bottom: 20px; right: 20px;
+    background: #007bff; color: white;
+    border: none; border-radius: 50%;
+    width: 60px; height: 60px; font-size: 24px;
+    cursor: pointer; display: none;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  }
+
+  /* Cart Drawer */
+  #cartDrawer {
+    position: fixed; top: 0; right: -400px;
+    width: 350px; height: 100%;
+    background: white;
+    box-shadow: -4px 0 10px rgba(0,0,0,0.2);
+    transition: right 0.3s ease-in-out;
+    padding: 20px; overflow-y: auto;
+    z-index: 999;
+  }
+  #cartDrawer.active { right: 0; }
+  #closeCart {
+    background: red; color: white;
+    border: none; border-radius: 5px;
+    padding: 5px 10px; cursor: pointer; float: right;
+  }
+  #cartList { list-style: none; padding: 0; }
+  #cartList li { margin: 8px 0; }
+  .remove-btn {
+    margin-left: 10px;
+    background: red; color: white;
+    border: none; border-radius: 5px;
+    padding: 2px 6px; cursor: pointer;
+  }
+  #total { font-weight: bold; margin-top: 10px; }
+  #address {
+    width: 100%; padding: 8px;
+    margin-top: 10px;
+    border-radius: 6px; border: 1px solid #aaa;
+  }
+</style>
+</head>
+<body>
+
+<!-- Banner -->
+<div class="banner">
+  🍴 Homemade Snacks & Pickles
+  <div class="logo">
+    <img src="images/Food_logo.png" alt="Logo">
+  </div>
+</div>
+
+<!-- Main Categories -->
+<div id="mainCategories">
+  <div class="tab snacks" onclick="openCategory('snacks')"><span>🍟 Snacks</span></div>
+  <div class="tab pickles" onclick="openCategory('pickles')"><span>🥒 Pickles</span></div>
+</div>
+
+<!-- Snacks -->
+<div id="snacks" class="category">
+ <div class="breadcrumb">Home > Snacks</div>
+  <button class="backBtn" onclick="goBack()">⬅ Back</button>
+  <div class="menu">
+    <div class="item"><div class="badge">🏠 Homemade</div><img src="images/pakora.jpg"><h3>Pakora</h3><select id="pakoraQty"><option value="250g" data-price="100">250g - ₹100</option><option value="500g" data-price="180">500g - ₹180</option><option value="1kg" data-price="350">1Kg - ₹350</option></select><button onclick="addToCart('Pakora','pakoraQty')">Add</button></div>
+    <div class="item"><div class="badge">🏠 Homemade</div><img src="images/ChillyMurukku.webp"><h3>Murukku</h3><select id="murukkuQty"><option value="250g" data-price="100">250g - ₹100</option><option value="500g" data-price="180">500g - ₹180</option><option value="1kg" data-price="350">1Kg - ₹350</option></select><button onclick="addToCart('Murukku','murukkuQty')">Add</button></div>
+    <div class="item"><div class="badge">🏠 Homemade</div><img src="images/Chakli.png"><h3>Chakli</h3><select id="chakliQty"><option value="250g" data-price="100">250g - ₹100</option><option value="500g" data-price="180">500g - ₹180</option><option value="1kg" data-price="350">1Kg - ₹350</option></select><button onclick="addToCart('Chakli','chakliQty')">Add</button></div>
+    <div class="item"><div class="badge">🏠 Homemade</div><img src="images/chekkalu.webp"><h3>Chekkalu</h3><select id="chekkaluQty"><option value="250g" data-price="100">250g - ₹100</option><option value="500g" data-price="180">500g - ₹180</option><option value="1kg" data-price="350">1Kg - ₹350</option></select><button onclick="addToCart('Chekkalu','chekkaluQty')">Add</button></div>
+    <div class="item"><div class="badge">🏠 Homemade</div><img src="images/Gavvalu.jpg"><h3>Bellam Gavvalu</h3><select id="gavvaluQty"><option value="250g" data-price="100">250g - ₹100</option><option value="500g" data-price="180">500g - ₹180</option><option value="1kg" data-price="350">1Kg - ₹350</option></select><button onclick="addToCart('Bellam Gavvalu','gavvaluQty')">Add</button></div>
+    <div class="item"><div class="badge">🏠 Homemade</div><img src="images/Jantikalu.jpeg"><h3>Jantikalu</h3><select id="jantikaluQty"><option value="250g" data-price="100">250g - ₹100</option><option value="500g" data-price="180">500g - ₹180</option><option value="1kg" data-price="350">1Kg - ₹350</option></select><button onclick="addToCart('Jantikalu','jantikaluQty')">Add</button></div>
+    <div class="item"><div class="badge">🏠 Homemade</div><img src="images/Sweet Boondi.jpg"><h3>Sweet Boondi</h3><select id="sweetBoondiQty"><option value="250g" data-price="100">250g - ₹100</option><option value="500g" data-price="180">500g - ₹180</option><option value="1kg" data-price="350">1Kg - ₹350</option></select><button onclick="addToCart('Sweet Boondi','sweetBoondiQty')">Add</button></div>
+    <div class="item"><div class="badge">🏠 Homemade</div><img src="images/Karaboondi.png"><h3>Kara Boondi</h3><select id="karaBoondiQty"><option value="250g" data-price="100">250g - ₹100</option><option value="500g" data-price="180">500g - ₹180</option><option value="1kg" data-price="350">1Kg - ₹350</option></select><button onclick="addToCart('Kara Boondi','karaBoondiQty')">Add</button></div>
+    <div class="item"><div class="badge">🏠 Homemade</div><img src="images/Nuvvula Undalu.jpg"><h3>Nuvvula Undalu</h3><select id="nuvvulaUndaluQty"><option value="250g" data-price="100">250g - ₹100</option><option value="500g" data-price="180">500g - ₹180</option><option value="1kg" data-price="350">1Kg - ₹350</option></select><button onclick="addToCart('Nuvvula Undalu','nuvvulaUndaluQty')">Add</button></div>
+    <div class="item"><div class="badge">🏠 Homemade</div><img src="images/Kobbari Laddu.jpg"><h3>Kobbari Laddu</h3><select id="kobbariLadduQty"><option value="250g" data-price="100">250g - ₹100</option><option value="500g" data-price="180">500g - ₹180</option><option value="1kg" data-price="350">1Kg - ₹350</option></select><button onclick="addToCart('Kobbari Laddu','kobbariLadduQty')">Add</button></div>
+  </div>
+</div>
+
+<!-- Pickles -->
+<div id="pickles" class="category">
+  <div class="breadcrumb">Home > Pickles</div>
+  <button class="backBtn" onclick="goBack()">⬅ Back</button>
+  <div class="menu">
+    <div class="item"><div class="badge">🏠 Homemade</div><div class="veg-label">VEG</div><img src="images/MangoPickle.png"><h3>Mango Pickle</h3><select id="mangoPickleQty"><option value="250g" data-price="100">250g - ₹100</option><option value="500g" data-price="180">500g - ₹180</option><option value="1kg" data-price="350">1Kg - ₹350</option></select><button onclick="addToCart('Mango Pickle','mangoPickleQty')">Add</button></div>
+    <div class="item"><div class="badge">🏠 Homemade</div><div class="veg-label">VEG</div><img src="images/Garlic.jpg"><h3>Garlic Pickle</h3><select id="garlicPickleQty"><option value="250g" data-price="100">250g - ₹100</option><option value="500g" data-price="180">500g - ₹180</option><option value="1kg" data-price="350">1Kg - ₹350</option></select><button onclick="addToCart('Garlic Pickle','garlicPickleQty')">Add</button></div>
+    <div class="item"><div class="badge">🏠 Homemade</div><div class="veg-label">VEG</div><img src="images/Lemon.jpg"><h3>Lemon Pickle</h3><select id="lemonPickleQty"><option value="250g" data-price="100">250g - ₹100</option><option value="500g" data-price="180">500g - ₹180</option><option value="1kg" data-price="350">1Kg - ₹350</option></select><button onclick="addToCart('Lemon Pickle','lemonPickleQty')">Add</button></div>
+    <div class="item"><div class="badge">🏠 Homemade</div><div class="veg-label">VEG</div><img src="images/Gongura.jpg"><h3>Gongura Pickle</h3><select id="gonguraPickleQty"><option value="250g" data-price="100">250g - ₹100</option><option value="500g" data-price="180">500g - ₹180</option><option value="1kg" data-price="350">1Kg - ₹350</option></select><button onclick="addToCart('Gongura Pickle','gonguraPickleQty')">Add</button></div>
+    <div class="item"><div class="badge">🏠 Homemade</div><div class="veg-label">VEG</div><img src="images/Tomato.jpg"><h3>Tomato Pickle</h3><select id="tomatoPickleQty"><option value="250g" data-price="100">250g - ₹100</option><option value="500g" data-price="180">500g - ₹180</option><option value="1kg" data-price="350">1Kg - ₹350</option></select><button onclick="addToCart('Tomato Pickle','tomatoPickleQty')">Add</button></div>
+    <div class="item"><div class="badge">🏠 Homemade</div><div class="veg-label">VEG</div><img src="images/Tamarind Pickle.jpg"><h3>Tamarind Pickle</h3><select id="tamarindPickleQty"><option value="250g" data-price="100">250g - ₹100</option><option value="500g" data-price="180">500g - ₹180</option><option value="1kg" data-price="350">1Kg - ₹350</option></select><button onclick="addToCart('Tamarind Pickle','tamarindPickleQty')">Add</button></div>
+    <div class="item"><div class="badge">🏠 Homemade</div><div class="veg-label">VEG</div><img src="images/Usirikaya Pickle.jpg"><h3>Usirikaya Pickle</h3><select id="usirikayaPickleQty"><option value="250g" data-price="100">250g - ₹100</option><option value="500g" data-price="180">500g - ₹180</option><option value="1kg" data-price="350">1Kg - ₹350</option></select><button onclick="addToCart('Usirikaya Pickle','usirikayaPickleQty')">Add</button></div>
+    <div class="item"><div class="badge">🏠 Homemade</div><div class="veg-label">VEG</div><img src="images/Ginger Pickle.jpg"><h3>Ginger Pickle</h3><select id="gingerPickleQty"><option value="250g" data-price="100">250g - ₹100</option><option value="500g" data-price="180">500g - ₹180</option><option value="1kg" data-price="350">1Kg - ₹350</option></select><button onclick="addToCart('Ginger Pickle','gingerPickleQty')">Add</button></div>
+    <div class="item"><div class="badge">🏠 Homemade</div><div class="nonveg-label">NON-VEG</div><img src="images/Chicken Pickle.jpg"><h3>Chicken Pickle</h3><select id="chickenPickleQty"><option value="250g" data-price="100">250g - ₹100</option><option value="500g" data-price="180">500g - ₹180</option><option value="1kg" data-price="350">1Kg - ₹350</option></select><button onclick="addToCart('Chicken Pickle','chickenPickleQty')">Add</button></div>
+    <div class="item"><div class="badge">🏠 Homemade</div><div class="nonveg-label">NON-VEG</div><img src="images/Mutton Pickle.jpg"><h3>Mutton Pickle</h3><select id="muttonPickleQty"><option value="250g" data-price="100">250g - ₹100</option><option value="500g" data-price="180">500g - ₹180</option><option value="1kg" data-price="350">1Kg - ₹350</option></select><button onclick="addToCart('Mutton Pickle','muttonPickleQty')">Add</button></div>
+    <div class="item"><div class="badge">🏠 Homemade</div><div class="nonveg-label">NON-VEG</div><img src="images/Fish Pickle.jpg"><h3>Fish Pickle</h3><select id="fishPickleQty"><option value="250g" data-price="100">250g - ₹100</option><option value="500g" data-price="180">500g - ₹180</option><option value="1kg" data-price="350">1Kg - ₹350</option></select><button onclick="addToCart('Fish Pickle','fishPickleQty')">Add</button></div>
+    <div class="item"><div class="badge">🏠 Homemade</div><div class="nonveg-label">NON-VEG</div><img src="images/Prawn Pickle.jpg"><h3>Prawn Pickle</h3><select id="prawnPickleQty"><option value="250g" data-price="100">250g - ₹100</option><option value="500g" data-price="180">500g - ₹180</option><option value="1kg" data-price="350">1Kg - ₹350</option></select><button onclick="addToCart('Prawn Pickle','prawnPickleQty')">Add</button></div>
+  </div>
+</div>
+
+<!-- Cart -->
+<button id="cartBtn" onclick="toggleCart()">🛒</button>
+<div id="cartDrawer">
+  <button id="closeCart" onclick="toggleCart()">✖</button>
+  <h2>Cart</h2>
+  <ul id="cartList"></ul>
+  <div id="total"></div>
+  <textarea id="address" placeholder="Enter your delivery address"></textarea>
+  <button onclick="checkout()">Checkout via WhatsApp</button>
+</div>
+
+<script>
+  let cart = [];
+
+  function openCategory(cat) {
+    document.getElementById("mainCategories").style.display = "none";
+    document.querySelectorAll(".category").forEach(c => c.classList.remove("active"));
+    document.getElementById(cat).classList.add("active");
+    document.body.style.background = cat === "snacks"
+      ? "linear-gradient(135deg, #fff3e0, #ffe0b2)"
+      : "linear-gradient(135deg, #e8f5e9, #c8e6c9)";
+  }
+
+  function goBack() {
+    document.querySelectorAll(".category").forEach(c => c.classList.remove("active"));
+    document.getElementById("mainCategories").style.display = "flex";
+    document.body.style.background = "linear-gradient(135deg, #fffbe6, #ffe6e6)";
+  }
+
+  function addToCart(item, qtyId) {
+    let select = document.getElementById(qtyId);
+    let qty = select.value;
+    let price = parseInt(select.selectedOptions[0].dataset.price);
+    cart.push({ item, qty, price });
+    updateCart();
+  }
+
+  function updateCart() {
+    let list = document.getElementById("cartList");
+    list.innerHTML = "";
+    let total = 0;
+    cart.forEach((c, i) => {
+      let li = document.createElement("li");
+      li.textContent = `${c.item} - ${c.qty} - ₹${c.price}`;
+      let btn = document.createElement("button");
+      btn.textContent = "x";
+      btn.className = "remove-btn";
+      btn.onclick = () => removeFromCart(i);
+      li.appendChild(btn);
+      list.appendChild(li);
+      total += c.price;
+    });
+    document.getElementById("total").innerText = "Total: ₹" + total;
+    document.getElementById("cartBtn").style.display = cart.length ? "block" : "none";
+  }
+
+  function removeFromCart(index) {
+    cart.splice(index, 1);
+    updateCart();
+  }
+
+  function toggleCart() {
+    document.getElementById("cartDrawer").classList.toggle("active");
+  }
+
+  function checkout() {
+    let address = document.getElementById("address").value;
+    if (!address) { alert("Please enter your address"); return; }
+    if (cart.length === 0) { alert("Your cart is empty!"); return; }
+
+    let message = "🛍️ I want to order:\n";
+    let total = 0;
+    cart.forEach(c => {
+      message += `🍴 ${c.item} - ${c.qty} - ₹${c.price}\n`;
+      total += c.price;
+    });
+    message += `\n💰 Total: ₹${total}\n📍 Address: ${address}`;
+    let phone = "919876543210"; // Replace with your WhatsApp number
+    let url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+    window.open(url, "_blank");
+  }
+</script>
+
+</body>
+</html>
